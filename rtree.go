@@ -14,7 +14,15 @@ type Rtree struct {
 }
 
 // New creates a new Tree backed by the given NodeStore.
-func New(store node.NodeStore) *Rtree { panic("not implemented") }
+func New(store *node.NodeStore, opts ...Option) *Rtree {
+	o := applyOptions(opts)
+	return &Rtree{
+		store:      store,
+		splitter:   o.splitter,
+		maxEntries: o.maxEntries,
+		minEntries: o.minEntries,
+	}
+}
 
 // Insert adds a new entry with the given bounding box and opaque data payload.
 // The data slice is copied internally — the caller may reuse it after Insert returns.
