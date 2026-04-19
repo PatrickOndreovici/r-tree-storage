@@ -1,6 +1,7 @@
 package r_tree
 
 import (
+	"errors"
 	"r-tree/internal/geo"
 	"r-tree/internal/node"
 	"r-tree/internal/split"
@@ -11,7 +12,7 @@ type Rtree struct {
 	splitter   split.Splitter
 	maxEntries int
 	minEntries int
-	rootID node.NodeID
+	rootID     node.NodeID
 }
 
 // New creates a new Tree backed by the given NodeStore.
@@ -62,9 +63,35 @@ func (t *Rtree) chooseLeaf(bounds geo.Rect) (*node.Node, error) {
 	nodeId := t.rootID
 
 	for {
-		t.store.
-	}
+		node, err := t.store.Get(nodeId)
+		if err != nil {
+			return nil, err
+		}
 
+		if node.IsLeaf {
+			return node, nil
+		}
+
+		if len(node.Entries) == 0 {
+			return nil, errors.New("no leaf nodes found")
+		}
+
+		minimumEnlargement := node.Entries[0].Rectangle.Enlargement(bounds)
+		minimumArea := node.Entries[0].Rectangle.Area()
+		bestEntry := node.Entries[0]
+
+		for _, entry := range node.Entries {
+			enlargement := entry.Rectangle.Enlargement(bounds)
+			area := entry.Rectangle.Area()
+
+			if enlargement < minimumEnlargement || (enlargement == minimumEnlargement && area < minimumArea) {
+				minimumEnlargement = enlargement
+				minimumArea = area
+				bestEntry = entry
+			}
+		}
+		nodeId = bestEntry.ChildID
+	}
 }
 
 // chooseSubtree picks the child entry in n whose bounding box needs the
