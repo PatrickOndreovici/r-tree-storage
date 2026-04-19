@@ -10,7 +10,7 @@ const (
 type TreeOptions struct {
 	maxEntries int
 	minEntries int
-	splitter   *split.Splitter
+	splitter   split.Splitter
 }
 
 type Option func(o *TreeOptions)
@@ -27,7 +27,7 @@ func WithMinEntries(minEntries int) Option {
 	}
 }
 
-func WithSplitter(splitter *split.Splitter) Option {
+func WithSplitter(splitter split.Splitter) Option {
 	return func(o *TreeOptions) {
 		o.splitter = splitter
 	}
