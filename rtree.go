@@ -7,14 +7,15 @@ import (
 )
 
 type Rtree struct {
-	store      *node.NodeStore
-	splitter   *split.Splitter
+	store      node.NodeStore
+	splitter   split.Splitter
 	maxEntries int
 	minEntries int
+	rootID node.NodeID
 }
 
 // New creates a new Tree backed by the given NodeStore.
-func New(store *node.NodeStore, opts ...Option) *Rtree {
+func New(store node.NodeStore, opts ...Option) *Rtree {
 	o := applyOptions(opts)
 	return &Rtree{
 		store:      store,
@@ -26,7 +27,9 @@ func New(store *node.NodeStore, opts ...Option) *Rtree {
 
 // Insert adds a new entry with the given bounding box and opaque data payload.
 // The data slice is copied internally — the caller may reuse it after Insert returns.
-func (t *Rtree) Insert(bounds geo.Rect, data []byte) error { panic("not implemented") }
+func (t *Rtree) Insert(bounds geo.Rect, data []byte) error {
+
+}
 
 // Search returns all entries whose bounding boxes intersect the given Rect.
 func (t *Rtree) Search(bounds geo.Rect) ([]node.Entry, error) { panic("not implemented") }
@@ -55,7 +58,14 @@ func (t *Rtree) Close() error { panic("not implemented") }
 // chooseLeaf traverses the tree top-down and returns the leaf node
 // where a new entry with the given bounds should be inserted.
 // Follows the ChooseLeaf algorithm from Guttman 1984.
-func (t *Rtree) chooseLeaf(bounds geo.Rect) (*node.Node, error) { panic("not implemented") }
+func (t *Rtree) chooseLeaf(bounds geo.Rect) (*node.Node, error) {
+	nodeId := t.rootID
+
+	for {
+		t.store.
+	}
+
+}
 
 // chooseSubtree picks the child entry in n whose bounding box needs the
 // least enlargement to contain bounds. Ties are broken by smallest area.
