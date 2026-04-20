@@ -29,7 +29,25 @@ func New(store node.NodeStore, opts ...Option) *Rtree {
 // Insert adds a new entry with the given bounding box and opaque data payload.
 // The data slice is copied internally — the caller may reuse it after Insert returns.
 func (t *Rtree) Insert(bounds geo.Rect, data []byte) error {
+	// step 1 - find the leaf node to insert into
+	leaf, err := t.chooseLeaf(bounds)
+	if err != nil {
+		return err
+	}
 
+	// step 2 - insert the new entry into the leaf
+	newEntry := node.Entry{
+		Rectangle: bounds,
+		Data:      data,
+	}
+
+	leaf.Entries = append(leaf.Entries, newEntry)
+
+	//step 3 - if leaf overflow split it
+
+	if len(leaf.Entries) > t.maxEntries {
+
+	}
 }
 
 // Search returns all entries whose bounding boxes intersect the given Rect.
